@@ -88,8 +88,9 @@ nodes and most of them end up carrying literals from the examples in dead branch
 verifier may rewrite a failing example to match the code, even rarely, every test stays green
 and the program stops sorting. The rate only changes how fast.
 
-The random walker is a worst case, not a model of an agent: it has no idea what it is doing.
-What it shows is what the checks hold by themselves.
+The random walker is not a model of an agent, nor a worst case: it has no idea what it is doing,
+and an agent that looks for the cheat on purpose would get there sooner. What it shows is what
+the checks hold by themselves.
 
 ## The same table in other languages
 
