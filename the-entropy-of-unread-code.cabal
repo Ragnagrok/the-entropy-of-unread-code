@@ -1,0 +1,25 @@
+cabal-version:   3.0
+name:            the-entropy-of-unread-code
+version:         0.1.0.0
+synopsis:        Toy: count every program that fits a specification, and watch unread code drift
+license:         MIT
+license-file:    LICENSE
+author:          Federico Sawady
+build-type:      Simple
+
+common comun
+  default-language: Haskell2010
+  default-extensions: BangPatterns
+  ghc-options:      -Wall -O2
+  build-depends:    base >=4.18 && <5
+
+library
+  import:          comun
+  hs-source-dirs:  src
+  exposed-modules: Programs
+
+executable census
+  import:          comun
+  hs-source-dirs:  app
+  main-is:         Main.hs
+  build-depends:   the-entropy-of-unread-code, containers >=0.6
