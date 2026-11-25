@@ -65,7 +65,7 @@ data Row = Row
   { programs   :: !Int
   , behaviours :: !IntSet.IntSet
   , nCorrect   :: !Int
-  , nTables    :: !Int  -- ^ wrong programs that copy a literal from the examples
+  , nTables    :: !Int  -- ^ wrong programs that copy a non-empty literal from the examples
   }
 
 emptyRow :: Row
@@ -204,7 +204,7 @@ main = do
   putStrLn ("[Int] -> [Int]: of the " ++ commas (length correctOnes)
             ++ " programs that satisfy the properties, "
             ++ commas (length (filter hasLiteral correctOnes))
-            ++ " carry a literal copied from the examples")
+            ++ " carry a non-empty literal copied from the examples")
   putStrLn ""
   putStrLn "Ord a => [a] -> [a]: every program that passes the 3 examples and does not sort"
   mapM_ (putStrLn . ("  " ++) . render)

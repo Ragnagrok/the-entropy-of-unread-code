@@ -49,15 +49,18 @@ monomorphic pool = Grammar
   , binaries = Append : map IfEq pool
   }
 
--- | Programs of type @Ord a => [a] -> [a]@. Without knowing what @a@ is, a
+-- | Programs of type @Ord a => [a] -> [a]@: exactly the pieces of
+-- 'monomorphic' that type-check at that type. Without knowing what @a@ is, a
 -- program can only rearrange, drop, duplicate and compare elements it was
--- given: no arithmetic, no evenness test, and no literal lists, because there
--- is no way to write a value of type @a@.
+-- given: no arithmetic and no evenness test. The only list it can write is
+-- @[]@, because it holds no value of type @a@, and the only test is
+-- @xs == []@, because '==' comes from 'Ord'. A non-empty literal such as
+-- @[1,2,3]@ needs a value of type @a@, and there is no way to write one.
 polymorphic :: Grammar
 polymorphic = Grammar
-  { leaves   = [Input]
+  { leaves   = [Input, Lit []]
   , unaries  = [Rev, Sort, Tail, Take 1, Take 2, Drop 1, Drop 2]
-  , binaries = [Append]
+  , binaries = [Append, IfEq []]
   }
 
 -- | The same pieces without 'Sort': the honest program no longer fits in the
@@ -99,10 +102,13 @@ eval e xs = go e
       Append a b   -> go a ++ go b
       IfEq l a b   -> if xs == l then go a else go b
 
+-- | Whether a program carries a list copied from the examples: a non-empty
+-- literal, or a test against one. @[]@ does not count, because it holds nothing
+-- from the examples and any program of either type can write it.
 hasLiteral :: Expr -> Bool
 hasLiteral e = case e of
   Input        -> False
-  Lit _        -> True
+  Lit l        -> not (null l)
   Rev a        -> hasLiteral a
   Sort a       -> hasLiteral a
   Tail a       -> hasLiteral a
@@ -111,7 +117,7 @@ hasLiteral e = case e of
   MapAdd _ a   -> hasLiteral a
   FilterEven a -> hasLiteral a
   Append a b   -> hasLiteral a || hasLiteral b
-  IfEq _ _ _   -> True
+  IfEq l a b   -> not (null l) || hasLiteral a || hasLiteral b
 
 -- | Haskell-like rendering, for the report.
 render :: Expr -> String

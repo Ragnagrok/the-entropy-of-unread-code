@@ -21,22 +21,24 @@ census is not how a model generates code, and the article says where that matter
 
 ```
                                          programs   log2 W  behaviours   correct  wrong, memorized
-[Int] -> [Int]: every program           3,756,114    21.84      76,987     8,847         3,625,650
+[Int] -> [Int]: every program           3,756,114    21.84      76,987     8,847         3,438,364
   that pass the 3 examples                  9,350    13.19          28     8,847               457
   that also satisfy the properties          8,847    13.11           1     8,847                 0
-Ord a => [a] -> [a]: every program         23,426    14.52       1,237        67                 0
-  that pass the 3 examples                    109     6.77          12        67                 0
-  that also satisfy the properties             67     6.07           1        67                 0
-[Int] -> [Int] without sort             2,799,636    21.42      68,236         0         2,725,310
+Ord a => [a] -> [a]: every program         71,488    16.13       1,237       871                 0
+  that pass the 3 examples                    913     9.83          12       871                 0
+  that also satisfy the properties            871     9.77           1       871                 0
+[Int] -> [Int] without sort             2,799,636    21.42      68,236         0         2,601,400
   that pass the 3 examples                    253     7.98          12         0               253
   that also satisfy the properties              0        -           0         0                 0
-Ord a => [a] -> [a] without sort           11,788    13.53         529         0                 0
+Ord a => [a] -> [a] without sort           39,806    15.28         529         0                 0
   that pass the 3 examples                      0        -           0         0                 0
 ```
 
 - **programs** is `W`: how many different programs survive. **behaviours** is how many
   different things they do, compared on 203 inputs. **correct** is how many behave like
   `sort` on those same 203 inputs. **wrong, memorized** is how many are wrong and copy a literal from the examples.
+  A literal here is a non-empty list: `[]` holds nothing from the examples, and a program of
+  either type can write it.
 - The three examples are `[3,1,2] → [1,2,3]`, `[] → []` and `[2,2,1] → [1,2,2]`. The
   generator may copy any list that appears in them, as a model with the tests in its context
   can.
@@ -50,11 +52,13 @@ What the article takes from it:
    depends on a measure, and a model has its own. The 95% also depends on the grammar: remove
    `sort` and it becomes 0%.
 2. **The examples leave 28 behaviours you can't see; the properties leave one.** But they
-   leave 8,847 different programs, and 8,620 of them carry a literal copied from the examples.
+   leave 8,847 different programs, and 7,216 of them carry a non-empty literal copied from the
+   examples.
    What a behavioural check can't reduce is structure.
-3. **The type removes 7.3 bits before any test runs**, and it removes exactly the programs
+3. **The type removes 5.7 bits before any test runs**, and it removes exactly the programs
    tests can't: those built from the tests. No program of type `Ord a => [a] -> [a]` can
-   write `[1,2,3]`. It also shrinks structure: the programs that sort go from 8,847 to 67.
+   write `[1,2,3]`; the only list it can write is `[]`, and the only test is `xs == []`.
+   It also shrinks structure: the programs that sort go from 8,847 to 871.
 4. **When the honest program doesn't fit, everything that passes is a lookup table.**
    Without `sort`, the 253 programs that pass the examples all memorized them. With the
    polymorphic type, none passes: the task fails honestly.
@@ -69,14 +73,14 @@ walkers, sizes up to 12, all starting at `sort xs`.
 The examples and the properties are fixed
    step  mean size  pass their tests  pass the original 3  behave like sort  carry a literal
       0        2.0              100%                 100%              100%               0%
-   1000        8.8              100%                 100%              100%              84%
-  50000        8.7              100%                 100%              100%              88%
+   1000        8.8              100%                 100%              100%              76%
+  50000        8.7              100%                 100%              100%              84%
 
 The verifier may rewrite failing examples, 1 time in 1000
    step  mean size  pass their tests  pass the original 3  behave like sort  carry a literal
       0        2.0              100%                 100%              100%               0%
-   1000        9.0              100%                  58%               56%              94%
-  10000        8.0              100%                   0%                0%              94%
+   1000        9.0              100%                  58%               56%              86%
+  10000        8.0              100%                   0%                0%              90%
 ```
 
 With the checks fixed, behaviour holds and structure drifts: programs grow from 2 to about 9

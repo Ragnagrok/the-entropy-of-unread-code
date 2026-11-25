@@ -1,16 +1,16 @@
 Every program up to size 6, and how many survive each check
 
                                          programs   log2 W  behaviours   correct  wrong, memorized
-[Int] -> [Int]: every program           3,756,114    21.84      76,987     8,847         3,625,650
+[Int] -> [Int]: every program           3,756,114    21.84      76,987     8,847         3,438,364
   that pass the 3 examples                  9,350    13.19          28     8,847               457
   that also satisfy the properties          8,847    13.11           1     8,847                 0
-Ord a => [a] -> [a]: every program         23,426    14.52       1,237        67                 0
-  that pass the 3 examples                    109     6.77          12        67                 0
-  that also satisfy the properties             67     6.07           1        67                 0
-[Int] -> [Int] without sort             2,799,636    21.42      68,236         0         2,725,310
+Ord a => [a] -> [a]: every program         71,488    16.13       1,237       871                 0
+  that pass the 3 examples                    913     9.83          12       871                 0
+  that also satisfy the properties            871     9.77           1       871                 0
+[Int] -> [Int] without sort             2,799,636    21.42      68,236         0         2,601,400
   that pass the 3 examples                    253     7.98          12         0               253
   that also satisfy the properties              0        -           0         0                 0
-Ord a => [a] -> [a] without sort           11,788    13.53         529         0                 0
+Ord a => [a] -> [a] without sort           39,806    15.28         529         0                 0
   that pass the 3 examples                      0        -           0         0                 0
   that also satisfy the properties              0        -           0         0                 0
 
@@ -22,7 +22,7 @@ Ord a => [a] -> [a] without sort           11,788    13.53         529         0
   if xs == [3,1,2] then [1,2,3] else if xs == [2,2,1] then [1,2,2] else xs
   if xs == [3,1,2] then [1,2,3] else if xs == [2,2,1] then [1,2,2] else []
 
-[Int] -> [Int]: of the 8,847 programs that satisfy the properties, 8,620 carry a literal copied from the examples
+[Int] -> [Int]: of the 8,847 programs that satisfy the properties, 7,216 carry a non-empty literal copied from the examples
 
 Ord a => [a] -> [a]: every program that passes the 3 examples and does not sort
   sort (tail (drop 2 (xs ++ xs)))
@@ -76,35 +76,35 @@ Programs that change without being read: 50 walkers, sizes up to 12, starting at
 The 3 examples are fixed
    step  mean size  pass their tests  pass the original 3  behave like sort  carry a literal
       0        2.0              100%                 100%              100%               0%
-     10        2.5              100%                 100%              100%              10%
-    100        5.6              100%                 100%               96%              60%
-   1000        8.8              100%                 100%               98%              82%
-  10000        8.8              100%                 100%               92%              88%
-  50000        8.8              100%                 100%               92%              88%
+     10        2.5              100%                 100%              100%               8%
+    100        5.6              100%                 100%               96%              54%
+   1000        8.8              100%                 100%               98%              76%
+  10000        8.8              100%                 100%               92%              84%
+  50000        8.8              100%                 100%               92%              84%
 
 The examples and the properties are fixed
    step  mean size  pass their tests  pass the original 3  behave like sort  carry a literal
       0        2.0              100%                 100%              100%               0%
-     10        2.5              100%                 100%              100%              10%
-    100        5.7              100%                 100%              100%              60%
-   1000        8.8              100%                 100%              100%              84%
-  10000        8.6              100%                 100%              100%              86%
-  50000        8.7              100%                 100%              100%              88%
+     10        2.5              100%                 100%              100%               8%
+    100        5.7              100%                 100%              100%              54%
+   1000        8.8              100%                 100%              100%              76%
+  10000        8.6              100%                 100%              100%              82%
+  50000        8.7              100%                 100%              100%              84%
 
 The verifier may rewrite failing examples, 1 time in 10
    step  mean size  pass their tests  pass the original 3  behave like sort  carry a literal
       0        2.0              100%                 100%              100%               0%
-     10        3.7              100%                  36%               36%              62%
-    100        6.7              100%                   0%                0%              94%
-   1000        7.0              100%                   0%                0%              92%
-  10000        6.4              100%                   2%                2%              90%
-  50000        6.8              100%                   0%                0%              94%
+     10        3.7              100%                  36%               36%              56%
+    100        6.7              100%                   0%                0%              88%
+   1000        7.0              100%                   0%                0%              86%
+  10000        6.4              100%                   2%                2%              82%
+  50000        6.8              100%                   0%                0%              86%
 
 The verifier may rewrite failing examples, 1 time in 1000
    step  mean size  pass their tests  pass the original 3  behave like sort  carry a literal
       0        2.0              100%                 100%              100%               0%
-     10        2.5              100%                 100%              100%              10%
-    100        5.8              100%                  94%               90%              62%
-   1000        9.0              100%                  58%               56%              94%
-  10000        8.0              100%                   0%                0%              94%
-  50000        8.4              100%                   0%                0%              92%
+     10        2.5              100%                 100%              100%               8%
+    100        5.8              100%                  94%               90%              56%
+   1000        9.0              100%                  58%               56%              86%
+  10000        8.0              100%                   0%                0%              90%
+  50000        8.4              100%                   0%                0%              82%
