@@ -30,9 +30,10 @@ satisfiesProperties e = all ok fresh
     ok xs = let ys = eval e xs in ordered ys && sort ys == sort xs
     ordered ys = and (zipWith (<=) ys (drop 1 ys))
 
--- | Behaves like 'sort' on every list we try.
+-- | Behaves like 'sort' on every list we try: the 200 random ones and the
+-- inputs of the examples, the same 203 lists that 'fingerprint' looks at.
 correct :: Expr -> Bool
-correct e = all (\xs -> eval e xs == sort xs) fresh
+correct e = all (\xs -> eval e xs == sort xs) (fresh ++ map fst examples)
 
 -- | 200 lists of length 0 to 7 with elements from -3 to 6, fixed seed.
 fresh :: [[Int]]
@@ -198,6 +199,12 @@ main = do
       wrong = sortOn size (filter (not . correct) passing)
   putStrLn "[Int] -> [Int]: the shortest programs that pass the 3 examples and do not sort"
   mapM_ (putStrLn . ("  " ++) . render) (take 6 wrong)
+  putStrLn ""
+  let correctOnes = filter (\e -> passesExamples e && satisfiesProperties e) mono
+  putStrLn ("[Int] -> [Int]: of the " ++ commas (length correctOnes)
+            ++ " programs that satisfy the properties, "
+            ++ commas (length (filter hasLiteral correctOnes))
+            ++ " carry a literal copied from the examples")
   putStrLn ""
   putStrLn "Ord a => [a] -> [a]: every program that passes the 3 examples and does not sort"
   mapM_ (putStrLn . ("  " ++) . render)

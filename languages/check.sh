@@ -44,6 +44,9 @@ go_build() { (cd go && go build "./$1"); }
 verdict "Go, the table against [T cmp.Ordered]"          rejected go_build honest
 verdict "Go, the table through a type assertion on any"  accepted go_build switch
 
+verdict "C, the table through void * as in qsort, with -Wall -Wextra -Werror" accepted \
+  gcc -std=c17 -Wall -Wextra -Werror -c voidptr.c -o "$tmp/voidptr.o"
+
 gcc -O0 -o "$tmp/o0" overflow.c && gcc -O2 -o "$tmp/o2" overflow.c
 verdict "C, the overflow test at -O0" accepted "$tmp/o0"
 verdict "C, the same test at -O2"     rejected "$tmp/o2"

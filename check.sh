@@ -30,6 +30,8 @@ expect "9,350 of them pass the 3 examples, with 28 different behaviours, 8,847 c
   '^  that pass the 3 examples +9,350 +13\.19 +28 +8,847 +457$'
 expect "the properties leave one behaviour, and no memorized program" \
   '^  that also satisfy the properties +8,847 +13\.11 +1 +8,847 +0$'
+expect "8,620 of the 8,847 correct [Int] -> [Int] programs carry a literal from the examples" \
+  '^\[Int\] -> \[Int\]: of the 8,847 programs that satisfy the properties, 8,620 carry a literal copied from the examples$'
 expect "the polymorphic type leaves 23,426 programs and none can memorize" \
   '^Ord a => \[a\] -> \[a\]: every program +23,426 +14\.52 +1,237 +67 +0$'
 expect "without sort, every program that passes the examples memorized them" \

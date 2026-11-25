@@ -9,8 +9,8 @@ macrostate. `W` is how many programs your checks can't tell apart, and here it i
 not estimated.
 
 The task is the smallest one with an unambiguous definition: sort a list of numbers. The
-language is a toy (`src/Programs.hs`): eleven pieces (`reverse`, `sort`, `tail`, `take`,
-`drop`, `++`, `map (+ k)`, `filter even`, literal lists and `if xs == lit then … else …`),
+language is a toy (`src/Programs.hs`): eleven pieces (the input `xs`, `reverse`, `sort`, `tail`,
+`take`, `drop`, `++`, `map (+ k)`, `filter even`, literal lists and `if xs == lit then … else …`),
 small enough to enumerate every program up to size 6. No model is involved. A uniform
 census is not how a model generates code, and the article says where that matters.
 
@@ -21,7 +21,7 @@ census is not how a model generates code, and the article says where that matter
 
 ```
                                          programs   log2 W  behaviours   correct  wrong, memorized
-[Int] -> [Int]: every program           3,756,114    21.84      76,987    14,263         3,620,234
+[Int] -> [Int]: every program           3,756,114    21.84      76,987     8,847         3,625,650
   that pass the 3 examples                  9,350    13.19          28     8,847               457
   that also satisfy the properties          8,847    13.11           1     8,847                 0
 Ord a => [a] -> [a]: every program         23,426    14.52       1,237        67                 0
@@ -36,7 +36,7 @@ Ord a => [a] -> [a] without sort           11,788    13.53         529         0
 
 - **programs** is `W`: how many different programs survive. **behaviours** is how many
   different things they do, compared on 203 inputs. **correct** is how many behave like
-  `sort`. **wrong, memorized** is how many are wrong and copy a literal from the examples.
+  `sort` on those same 203 inputs. **wrong, memorized** is how many are wrong and copy a literal from the examples.
 - The three examples are `[3,1,2] → [1,2,3]`, `[] → []` and `[2,2,1] → [1,2,2]`. The
   generator may copy any list that appears in them, as a model with the tests in its context
   can.
@@ -47,12 +47,14 @@ What the article takes from it:
 
 1. **It depends on what you count.** Among the programs that pass the examples, 95% sort
    (8,847 of 9,350). Among their behaviours, 1 in 28 does. Which one is "the probable" one
-   depends on a measure, and a model has its own.
+   depends on a measure, and a model has its own. The 95% also depends on the grammar: remove
+   `sort` and it becomes 0%.
 2. **The examples leave 28 behaviours you can't see; the properties leave one.** But they
-   leave 8,847 different programs. What a behavioural check can't reduce is structure.
+   leave 8,847 different programs, and 8,620 of them carry a literal copied from the examples.
+   What a behavioural check can't reduce is structure.
 3. **The type removes 7.3 bits before any test runs**, and it removes exactly the programs
    tests can't: those built from the tests. No program of type `Ord a => [a] -> [a]` can
-   write `[1,2,3]`.
+   write `[1,2,3]`. It also shrinks structure: the programs that sort go from 8,847 to 67.
 4. **When the honest program doesn't fit, everything that passes is a lookup table.**
    Without `sort`, the 253 programs that pass the examples all memorized them. With the
    polymorphic type, none passes: the task fails honestly.
@@ -74,7 +76,7 @@ The verifier may rewrite failing examples, 1 time in 1000
    step  mean size  pass their tests  pass the original 3  behave like sort  carry a literal
       0        2.0              100%                 100%              100%               0%
    1000        9.0              100%                  58%               56%              94%
-  10000        8.0              100%                   0%                2%              94%
+  10000        8.0              100%                   0%                0%              94%
 ```
 
 With the checks fixed, behaviour holds and structure drifts: programs grow from 2 to about 9
@@ -97,7 +99,7 @@ the honest version. What sets them apart is what it takes to get it through:
 | TypeScript `--strict` | rejected (`honest.ts`) | `as unknown as T[]` (`cast.ts`) |
 | Python, mypy `--strict` | rejected (`honest.py`) | `cast` (`cast.py`); and Python runs the rejected file anyway |
 | Go | rejected (`go/honest`) | a type assertion, `any(xs).([]int)` (`go/switch`), which looks like ordinary code |
-| C | no parametric generics | `overflow.c`: the same test passes at `-O0` and fails at `-O2` (signed overflow is undefined behaviour) |
+| C | no parametric generics; the generic signature is `void *`, as in `qsort` | nothing: the table compiles with `-Wall -Wextra -Werror` (`voidptr.c`) |
 
 ## Run it
 
@@ -116,6 +118,6 @@ installed into `languages/.venv` on the first run). The C case was checked with 
 | `app/Main.hs` | The examples, the properties, the census and the walks |
 | `expected-output.txt` | The full output, verbatim |
 | `check.sh` | Diffs the output and checks the article's claims one by one |
-| `languages/` | The lookup table in Haskell, TypeScript, Python, Go, and the C case, with their own `check.sh` |
+| `languages/` | The lookup table in Haskell, TypeScript, Python, Go and C, the C overflow case, and their own `check.sh` |
 
 MIT license.
